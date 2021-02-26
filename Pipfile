@@ -7,12 +7,11 @@ verify_ssl = true
 jupyter = "*"
 pylint = "*"
 autopep8 = "*"
-python-dotenv = "*"
+build = "*"
 
 [packages]
 sqlalchemy = "*"
 pandas = "*"
-python-dotenv = "*"
 pyodbc = "*"
 
 [requires]
