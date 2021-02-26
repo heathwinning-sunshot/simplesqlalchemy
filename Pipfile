@@ -4,11 +4,16 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+jupyter = "*"
+pylint = "*"
+autopep8 = "*"
+python-dotenv = "*"
 
 [packages]
 sqlalchemy = "*"
 pandas = "*"
 python-dotenv = "*"
+pyodbc = "*"
 
 [requires]
 python_version = "3.8"
