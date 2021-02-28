@@ -1,3 +1,11 @@
+# simplesqlalchemy
+A small wrapper around sqlalchemy to reduce boilerplate when using sqlalchemy and pandas.
+
+## Installation
+`pipenv install git+https://github.com/heathwinning-sunshot/simplesqlalchemy#egg=simplesqlalchemy`
+
+## Usage
+```python
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from simplesqlalchemy import Database, Credentials
@@ -41,3 +49,4 @@ df["modified_date"] = datetime.today()
 
 # write dataframe back to table
 db.write_df(df, table=some_table, if_exists="append")
+```
