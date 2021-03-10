@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import List, Tuple
+from typing import List, Tuple, Union
 import urllib
 from sqlalchemy.sql.schema import Column, MetaData, Table
 from sqlalchemy.engine import Engine, create_engine
@@ -59,3 +59,12 @@ class Database:
             schema=table.schema,
             **kwargs
         )
+
+    def insert(self, rows):
+        if isinstance(rows, list):
+            self.session.add_all(rows)
+        else:
+            self.session.add(rows)
+        
+    def commit(self):
+        self.session.commit()
