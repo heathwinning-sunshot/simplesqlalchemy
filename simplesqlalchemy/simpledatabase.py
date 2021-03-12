@@ -27,10 +27,11 @@ class Database:
         connection_string = f"mssql+pyodbc:///?odbc_connect={connection_params}"
         return create_engine(connection_string, fast_executemany=fast_executemany)
 
-    def table(self, table_name: str, schema: str, primary_key_columns: List[str]):
+    def table(self, table_name: str, schema: str, columns: List[Column]=[], primary_key_columns: List[str]=[]):
         return Table(
             table_name,
             self.metadata,
+            *columns,
             *[Column(column, primary_key=True) for column in primary_key_columns],
             autoload=True,
             autoload_with=self.engine,
