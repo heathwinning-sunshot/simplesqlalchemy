@@ -54,6 +54,11 @@ class Database:
         return pd.read_sql(query.statement, self.engine)
 
     def write_df(self, df: pd.DataFrame, table: Table, **kwargs):
+        if not isinstance(table, Table):
+            try:
+                table = table.__table__
+            except AttributeError:
+                raise ValueError(f"table of type {table.__class__} is not supported")
         df.to_sql(
             con=self.engine,
             name=table.name,
