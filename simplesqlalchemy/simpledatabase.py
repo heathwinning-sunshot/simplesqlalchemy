@@ -53,7 +53,7 @@ class Database:
     def to_df(self, query: Query) -> pd.DataFrame:
         return pd.read_sql(query.statement, self.engine)
 
-    def write_df(self, df: pd.DataFrame, table: Table, **kwargs):
+    def write_df(self, df: pd.DataFrame, table: Union[Table,str], **kwargs):
         if isinstance(table, str):
             df.to_sql(
                 con=self.engine,
