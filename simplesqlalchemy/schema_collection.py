@@ -15,7 +15,6 @@ class TableCollection:
             raise KeyError(f"no table named {name}")
 
     def add_table(self, tablename: str, table: DeclarativeMeta):
-        print(f"\tadding table {table}")
         self.tables_[tablename] = table
 
     def __repr__(self) -> str:
@@ -38,7 +37,6 @@ class SchemaCollection:
             raise AttributeError(f"no schema named {name}")
     
     def add_table_to_schema(self, schema: str, tablename: str, table: DeclarativeMeta):
-        print(f"adding to schema {schema}")
         if schema not in self.schemas_:
             self.schemas_[schema] = TableCollection()
 
@@ -48,7 +46,6 @@ class SchemaCollection:
         for table in classes:
             schema, tablename = table_from_schema_qualified_classname(table.__name__)
             self.add_table_to_schema(schema, tablename, table)
-        print(self.schemas_)
 
     def __repr__(self) -> str:
         return repr(self.schemas_)
