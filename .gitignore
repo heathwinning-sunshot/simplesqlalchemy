@@ -11,3 +11,6 @@ extras
 .vscode
 
 .DS_Store
+
+playground
+.env

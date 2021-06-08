@@ -8,6 +8,7 @@ jupyter = "*"
 pylint = "*"
 autopep8 = "*"
 build = "*"
+python-dotenv = "*"
 
 [packages]
 sqlalchemy = "*"

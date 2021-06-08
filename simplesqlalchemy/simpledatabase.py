@@ -1,10 +1,11 @@
+from simplesqlalchemy.schema_collection import SchemaCollection
 import pandas as pd
 from typing import List, Tuple, Union
 import urllib
 from sqlalchemy.sql.schema import Column, MetaData, Table
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.ext.automap import AutomapBase, automap_base, classname_for_table
 from sqlalchemy.orm.query import Query
 
 class Credentials:
@@ -20,6 +21,10 @@ class Database:
         self.tables = None
         self.engine = self.get_engine(credentials, fast_executemany)
         self.session = sessionmaker(self.engine)()
+
+    @property
+    def t(self):
+        return self.tables
 
     def get_engine(self, credentials: Credentials, fast_executemany: bool=True) -> Engine:
         driver = "{ODBC Driver 17 for SQL Server}"
@@ -39,9 +44,12 @@ class Database:
         )
 
     def prepare_tables(self):
-        Base = automap_base(metadata=self.metadata)
-        Base.prepare()
-        self.tables = Base.classes
+        base = automap_base(metadata=self.metadata)
+        base.prepare(
+            classname_for_table=schema_qualified_classname_for_table
+        )
+        self.classes_ = base.classes
+        self.tables = SchemaCollection(base.classes)
         return self.tables
 
     def reset_metadata(self):
@@ -81,3 +89,6 @@ class Database:
         
     def commit(self):
         self.session.commit()
+
+def schema_qualified_classname_for_table(base: AutomapBase, tablename: str, table: Table) -> str:
+    return f"__{table.schema}__{tablename}"
