@@ -15,15 +15,15 @@ class Credentials:
 
 class Database:
     def __init__(self, server: str, database: str, credentials: Credentials, fast_executemany: bool=True) -> None:
-        self.server = server
-        self.database = database
+        self.server: str = server
+        self.database: str = database
         self.reset_metadata()
-        self.tables = None
-        self.engine = self.get_engine(credentials, fast_executemany)
-        self.session = sessionmaker(self.engine)()
+        self.tables: SchemaCollection = None
+        self.engine: Engine = self.get_engine(credentials, fast_executemany)
+        self.session: Session = sessionmaker(self.engine)()
 
     @property
-    def t(self):
+    def t(self) -> SchemaCollection:
         return self.tables
 
     def get_engine(self, credentials: Credentials, fast_executemany: bool=True) -> Engine:
