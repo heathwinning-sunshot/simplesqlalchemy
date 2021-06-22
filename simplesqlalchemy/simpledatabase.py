@@ -31,12 +31,12 @@ class Database:
     def get_engine(self, credentials: Credentials, fast_executemany: bool = True) -> Engine:
         return create_engine(
             connection_string=self.connection_string(
-                driver="{ODBC Driver 17 for SQL Server}",
                 credentials=credentials
             ),
             fast_executemany=fast_executemany)
 
-    def connection_string(self, driver: str, credentials: Credentials) -> str:
+    def connection_string(self, credentials: Credentials) -> str:
+        driver="{ODBC Driver 17 for SQL Server}"
         connection_params = urllib.parse.quote_plus(
             f"DRIVER={driver};SERVER=tcp:{self.server},1433;DATABASE={self.database};UID={credentials.uid};PWD={credentials.pwd}")
         return f"mssql+pyodbc:///?odbc_connect={connection_params}"
