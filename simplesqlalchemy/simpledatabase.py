@@ -30,7 +30,7 @@ class Database:
 
     def get_engine(self, credentials: Credentials, fast_executemany: bool = True) -> Engine:
         return create_engine(
-            connection_string=self.connection_string(
+            self.connection_string(
                 credentials=credentials
             ),
             fast_executemany=fast_executemany)
