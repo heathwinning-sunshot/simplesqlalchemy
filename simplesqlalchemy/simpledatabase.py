@@ -1,13 +1,14 @@
-from simplesqlalchemy.schema_collection import SchemaCollection
-import pandas as pd
 from typing import List, Tuple, Union
 import urllib
+
+import pandas as pd
 from sqlalchemy.sql.schema import Column, MetaData, Table
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.automap import AutomapBase, automap_base, classname_for_table
 from sqlalchemy.orm.query import Query
 
+from simplesqlalchemy.schema_collection import SchemaCollection
 
 class Credentials:
     def __init__(self, uid: str, pwd: str) -> None:
@@ -33,10 +34,12 @@ class Database:
             self.connection_string(
                 credentials=credentials
             ),
-            fast_executemany=fast_executemany)
+            fast_executemany=fast_executemany,
+            pool_pre_ping=True
+        )
 
     def connection_string(self, credentials: Credentials) -> str:
-        driver="{ODBC Driver 17 for SQL Server}"
+        driver = "{ODBC Driver 17 for SQL Server}"
         connection_params = urllib.parse.quote_plus(
             f"DRIVER={driver};SERVER=tcp:{self.server},1433;DATABASE={self.database};UID={credentials.uid};PWD={credentials.pwd}")
         return f"mssql+pyodbc:///?odbc_connect={connection_params}"
