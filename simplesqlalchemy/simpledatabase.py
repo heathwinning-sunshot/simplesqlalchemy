@@ -115,5 +115,5 @@ class Database:
     def commit(self):
         self.session.commit()
 
-    def _schema_qualified_classname_for_table(base: AutomapBase, tablename: str, table: Table) -> str:
+    def _schema_qualified_classname_for_table(self, base: AutomapBase, tablename: str, table: Table) -> str:
         return f"__{table.schema}__{tablename}"
