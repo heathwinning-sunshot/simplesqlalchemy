@@ -25,15 +25,13 @@ class Database:
         self.reset_metadata()
         self.tables: SchemaCollection = None
         self.reset_engine()
-        self.reset_session()
+        self.sessionm = self.create_session()
 
     @property
     def t(self) -> SchemaCollection:
         return self.tables
 
     def reset_session(self) -> None:
-        if self.session is not None:
-            self.session.close()
         self.session = self.create_session()
 
     def create_session(self) -> Session:
