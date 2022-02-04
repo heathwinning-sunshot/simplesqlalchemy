@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import Any, Callable, List, Tuple, Union
 import urllib
 
 import pandas as pd
@@ -7,6 +7,7 @@ from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.automap import AutomapBase, automap_base, classname_for_table
 from sqlalchemy.orm.query import Query
+import pyodbc
 
 from simplesqlalchemy.schema_collection import SchemaCollection
 
@@ -17,26 +18,40 @@ class Credentials:
 
 
 class Database:
-    def __init__(self, server: str, database: str, credentials: Credentials, fast_executemany: bool = True) -> None:
+    def __init__(self, server: str, database: str, credentials: Credentials) -> None:
         self.server: str = server
         self.database: str = database
+        self.credentials = credentials
         self.reset_metadata()
         self.tables: SchemaCollection = None
-        self.engine: Engine = self.get_engine(credentials, fast_executemany)
-        self.session: Session = sessionmaker(self.engine)()
+        self.reset_engine()
+        self.reset_session()
 
     @property
     def t(self) -> SchemaCollection:
         return self.tables
 
-    def get_engine(self, credentials: Credentials, fast_executemany: bool = True) -> Engine:
+    def reset_session(self) -> None:
+        self.session.close()
+        self.session = self.create_session()
+
+    def create_session(self) -> Session:
+        return sessionmaker(self.engine)()
+
+    def reset_engine(self) -> None:
+        self.engine = self.create_engine()
+
+    def create_engine(self) -> Engine:
         return create_engine(
             self.connection_string(
-                credentials=credentials
+                credentials=self.credentials
             ),
-            fast_executemany=fast_executemany,
+            fast_executemany=True,
             pool_pre_ping=True
         )
+
+    def reset_metadata(self):
+        self.metadata = MetaData()
 
     def connection_string(self, credentials: Credentials) -> str:
         driver = "{ODBC Driver 17 for SQL Server}"
@@ -59,17 +74,22 @@ class Database:
     def prepare_tables(self):
         base = automap_base(metadata=self.metadata)
         base.prepare(
-            classname_for_table=schema_qualified_classname_for_table
+            classname_for_table=self._schema_qualified_classname_for_table
         )
         self.classes_ = base.classes
         self.tables = SchemaCollection(base.classes)
         return self.tables
 
-    def reset_metadata(self):
-        self.metadata = MetaData()
-
     def query(self, *args, **kwargs) -> Query:
         return self.session.query(*args, **kwargs)
+
+    def refresh_session_if_connection_is_stale(self, db_op: Callable) -> Callable:
+        def lazy_session_refresh() -> Any:
+            try:
+                return db_op()
+            except pyodbc
+
+
 
     def to_df(self, query: Query) -> pd.DataFrame:
         return pd.read_sql(query.statement, self.engine)
@@ -104,6 +124,5 @@ class Database:
     def commit(self):
         self.session.commit()
 
-
-def schema_qualified_classname_for_table(base: AutomapBase, tablename: str, table: Table) -> str:
-    return f"__{table.schema}__{tablename}"
+    def _schema_qualified_classname_for_table(base: AutomapBase, tablename: str, table: Table) -> str:
+        return f"__{table.schema}__{tablename}"
