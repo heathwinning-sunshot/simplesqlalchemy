@@ -32,7 +32,8 @@ class Database:
         return self.tables
 
     def reset_session(self) -> None:
-        self.session.close()
+        if self.session is not None:
+            self.session.close()
         self.session = self.create_session()
 
     def create_session(self) -> Session:
