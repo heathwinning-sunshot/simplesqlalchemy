@@ -25,7 +25,7 @@ class Database:
         self.reset_metadata()
         self.tables: SchemaCollection = None
         self.reset_engine()
-        self.sessionm = self.create_session()
+        self.session = self.create_session()
 
     @property
     def t(self) -> SchemaCollection:
