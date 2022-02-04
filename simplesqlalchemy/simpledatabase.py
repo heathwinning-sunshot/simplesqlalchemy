@@ -83,14 +83,6 @@ class Database:
     def query(self, *args, **kwargs) -> Query:
         return self.session.query(*args, **kwargs)
 
-    def refresh_session_if_connection_is_stale(self, db_op: Callable) -> Callable:
-        def lazy_session_refresh() -> Any:
-            try:
-                return db_op()
-            except pyodbc
-
-
-
     def to_df(self, query: Query) -> pd.DataFrame:
         return pd.read_sql(query.statement, self.engine)
 
