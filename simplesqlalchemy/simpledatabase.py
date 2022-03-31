@@ -9,7 +9,7 @@ from sqlalchemy.ext.automap import AutomapBase, automap_base, classname_for_tabl
 from sqlalchemy.orm.query import Query
 import pyodbc
 
-from simplesqlalchemy.schema_collection import SchemaCollection, TableSugar
+from simplesqlalchemy.schema_collection import SchemaCollection
 
 class Credentials:
     def __init__(self, uid: str, pwd: str) -> None:
@@ -80,9 +80,6 @@ class Database:
         return self.tables
 
     def query(self, *args, **kwargs) -> Query:
-        # if the query is for a select * then a TableSugar object might be passed,
-        # strip out the sugar of any TableSugars
-        args = [arg.table_ if isinstance(arg, TableSugar) else arg for arg in args]
         return self.session.query(*args, **kwargs)
 
     def to_df(self, query: Query) -> pd.DataFrame:
