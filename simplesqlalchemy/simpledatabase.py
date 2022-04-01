@@ -1,21 +1,21 @@
-from typing import Any, Callable, List, Tuple, Union
+from dataclasses import dataclass
+from typing import List, Union
 import urllib
 
 import pandas as pd
 from sqlalchemy.sql.schema import Column, MetaData, Table
 from sqlalchemy.engine import Engine, create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.ext.automap import AutomapBase, automap_base, classname_for_table
+from sqlalchemy.ext.automap import AutomapBase, automap_base
 from sqlalchemy.orm.query import Query
-import pyodbc
 
 from simplesqlalchemy.schema_collection import SchemaCollection
 
-class Credentials:
-    def __init__(self, uid: str, pwd: str) -> None:
-        self.uid = uid
-        self.pwd = pwd
 
+@dataclass
+class Credentials:
+    uid: str
+    pwd: str
 
 class Database:
     def __init__(self, server: str, database: str, credentials: Credentials) -> None:
