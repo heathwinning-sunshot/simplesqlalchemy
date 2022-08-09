@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Union
+from typing import List, Optional, Union
 import urllib
 
 import pandas as pd
@@ -18,10 +18,11 @@ class Credentials:
     pwd: str
 
 class Database:
-    def __init__(self, server: str, database: str, credentials: Credentials) -> None:
+    def __init__(self, server: str, database: str, credentials: Credentials, driver: str = "{ODBC Driver 17 for SQL Server}") -> None:
         self.server: str = server
         self.database: str = database
         self.credentials = credentials
+        self.driver = driver
         self.reset_metadata()
         self.tables: SchemaCollection = None
         self.reset_engine()
@@ -43,7 +44,8 @@ class Database:
     def create_engine(self) -> Engine:
         return create_engine(
             self.connection_string(
-                credentials=self.credentials
+                credentials=self.credentials,
+                driver=self.driver
             ),
             fast_executemany=True,
             pool_pre_ping=True
@@ -52,8 +54,7 @@ class Database:
     def reset_metadata(self):
         self.metadata = MetaData()
 
-    def connection_string(self, credentials: Credentials) -> str:
-        driver = "{ODBC Driver 17 for SQL Server}"
+    def connection_string(self, credentials: Credentials, driver: str) -> str:
         connection_params = urllib.parse.quote_plus(
             f"DRIVER={driver};SERVER=tcp:{self.server},1433;DATABASE={self.database};UID={credentials.uid};PWD={credentials.pwd}")
         return f"mssql+pyodbc:///?odbc_connect={connection_params}"
